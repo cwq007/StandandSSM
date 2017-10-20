@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" 
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <!-- 引入jdbc属性文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!-- 配置DBCP连接池 -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" 
+		p:driverClassName="${jdbcDriverClassName}" 
+		p:url="${jdbcUrl}" 
+		p:username="${jdbc.username}" 
+		p:password="${jdbc.password}" 
+		p:maxActive="${jdbc.pool.maxActive}" 
+		p:maxIdle="${jdbc.pool.maxIdle}" 
+		p:minIdle="${jdbc.pool.minIdle}" 
+		p:maxWait="${jdbc.pool.maxWait}" 
+		p:validationQuery="select 1" 
+		p:testOnBorrow="true"/>
+	
+	
+    <!--配置sqlsessionFactory-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" 
+		p:dataSource-ref="dataSource" 
+		p:configLocation="classpath:mybatis/mybatis-config.xml" 
+		p:mapperLocations="classpath:mybatis/mapper/*Mapper.xml" />
+	<!-- <property name="typeAliasesPackage" value="com.ninemax.ssmmodule.entity"/> -->
+	
+	
+    <!-- 配置扫描Dao接口包  动态实现Dao接口   注入spring-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" 
+    	p:sqlSessionFactoryBeanName="sqlSessionFactory" 
+    	p:basePackage="com.ninemax.ssmmodule.dao"/>
+    	
+</beans>
